@@ -96,20 +96,20 @@
                 tools:itemCount="5"
                 tools:listitem="@layout/adapter_search_word" />
             <com.google.android.material.textview.MaterialTextView
-                android:id="@+id/movieWord"
+                android:id="@+id/tvWord"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
                 android:layout_marginEnd="16dp"
                 android:layout_marginTop="8dp"
                 android:layout_marginBottom="16dp"
-                android:text="@string/search_hot_movie"
+                android:text="@string/search_hot_tv"
                 android:textColor="@color/white"
                 android:textSize="18sp"
                 android:visibility="gone" />
 
             <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/movieWordRecycler"
+                android:id="@+id/tvWordRecycler"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="-8dp"
@@ -125,20 +125,20 @@
                 tools:listitem="@layout/adapter_search_word" />
 
             <com.google.android.material.textview.MaterialTextView
-                android:id="@+id/tvWord"
+                android:id="@+id/movieWord"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
                 android:layout_marginEnd="16dp"
                 android:layout_marginTop="8dp"
                 android:layout_marginBottom="16dp"
-                android:text="@string/search_hot_tv"
+                android:text="@string/search_hot_movie"
                 android:textColor="@color/white"
                 android:textSize="18sp"
                 android:visibility="gone" />
 
             <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/tvWordRecycler"
+                android:id="@+id/movieWordRecycler"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="-8dp"
