@@ -11,6 +11,8 @@ import android.view.View;
 import android.view.inputmethod.EditorInfo;
 
 import androidx.annotation.NonNull;
+import android.widget.TextView;
+
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewbinding.ViewBinding;
 
@@ -28,6 +30,7 @@ import com.fongmi.android.NewTV.ui.custom.CustomTextListener;
 import com.fongmi.android.NewTV.ui.dialog.LocalConnectDialog;
 import com.fongmi.android.NewTV.ui.dialog.SiteDialog;
 import com.fongmi.android.NewTV.utils.KeyUtil;
+import com.fongmi.android.NewTV.utils.SearchSuggest;
 import com.fongmi.android.NewTV.utils.Util;
 import com.fongmi.android.NewTV.utils.ZhuToPin;
 import com.github.catvod.net.OkHttp;
@@ -36,6 +39,8 @@ import com.google.android.flexbox.FlexboxLayoutManager;
 import com.google.common.net.HttpHeaders;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 import okhttp3.Call;
@@ -43,9 +48,23 @@ import okhttp3.Response;
 
 public class SearchActivity extends BaseActivity implements WordAdapter.OnClickListener, RecordAdapter.OnClickListener, CustomKeyboard.Callback {
 
+    private static final int HOT_LIMIT = 10;
+
     private ActivitySearchBinding mBinding;
     private RecordAdapter mRecordAdapter;
     private WordAdapter mWordAdapter;
+    private WordAdapter mMovieAdapter;
+    private WordAdapter mTvAdapter;
+
+    /** 联想词序号：双源并发返回，用序号丢弃过期响应，避免旧结果覆盖新结果。 */
+    private int mSuggestSeq;
+    private List<Word.Data> mIqiyi = List.of();
+    private List<Word.Data> mTencent = List.of();
+
+    private interface HotSaver {
+
+        void save(String result);
+    }
 
     public static void start(Activity activity) {
         activity.startActivity(new Intent(activity, SearchActivity.class));
@@ -106,6 +125,14 @@ public class SearchActivity extends BaseActivity implements WordAdapter.OnClickL
         mBinding.wordRecycler.setHasFixedSize(false);
         mBinding.wordRecycler.setLayoutManager(new FlexboxLayoutManager(this, FlexDirection.ROW));
         mBinding.wordRecycler.setAdapter(mWordAdapter = new WordAdapter(this));
+        mBinding.movieWordRecycler.setItemAnimator(null);
+        mBinding.movieWordRecycler.setHasFixedSize(false);
+        mBinding.movieWordRecycler.setLayoutManager(new FlexboxLayoutManager(this, FlexDirection.ROW));
+        mBinding.movieWordRecycler.setAdapter(mMovieAdapter = new WordAdapter(this));
+        mBinding.tvWordRecycler.setItemAnimator(null);
+        mBinding.tvWordRecycler.setHasFixedSize(false);
+        mBinding.tvWordRecycler.setLayoutManager(new FlexboxLayoutManager(this, FlexDirection.ROW));
+        mBinding.tvWordRecycler.setAdapter(mTvAdapter = new WordAdapter(this));
         mBinding.recordRecycler.setHasFixedSize(false);
         mBinding.recordRecycler.setLayoutManager(new FlexboxLayoutManager(this, FlexDirection.ROW));
         mBinding.recordRecycler.setAdapter(mRecordAdapter = new RecordAdapter(this));
@@ -126,32 +153,115 @@ public class SearchActivity extends BaseActivity implements WordAdapter.OnClickL
         else getSuggest(text);
     }
 
+    /**
+     * 三个分类各自「先渲染缓存 → 超时才刷新」。
+     *
+     * <p>榜单是低频数据，没必要每次进搜索页都打三次请求；15 分钟内只读缓存。
+     * 任一请求失败都静默降级为缓存内容，不弹提示、不清空已有数据。
+     */
     private void getHot() {
+        mSuggestSeq++;
         mBinding.word.setText(R.string.search_hot);
-        mWordAdapter.setItems(Word.objectFrom(Setting.getHot()).getData());
-        OkHttp.newCall("https://api.web.360kan.com/v1/rank?cat=1", Map.of(HttpHeaders.REFERER, "https://www.360kan.com/rank/general")).enqueue(getCallback(true));
+        showHotGroups(true);
+        bindHot(mWordAdapter, mBinding.wordRecycler, mBinding.word, Setting.getHot(), true);
+        bindHot(mMovieAdapter, mBinding.movieWordRecycler, mBinding.movieWord, Setting.getHotMovie(), false);
+        bindHot(mTvAdapter, mBinding.tvWordRecycler, mBinding.tvWord, Setting.getHotTv(), false);
+        if (!Setting.isHotExpired()) return;
+        requestRank(1, mWordAdapter, mBinding.wordRecycler, mBinding.word, Setting::putHot);
+        requestRank(2, mMovieAdapter, mBinding.movieWordRecycler, mBinding.movieWord, Setting::putHotMovie);
+        requestRank(3, mTvAdapter, mBinding.tvWordRecycler, mBinding.tvWord, Setting::putHotTv);
     }
 
-    private void getSuggest(String text) {
-        mBinding.word.setText(R.string.search_suggest);
-        OkHttp.newCall("https://suggest.video.iqiyi.com/?if=mobile&key=" + Uri.encode(ZhuToPin.get(text))).enqueue(getCallback(false));
+    private void bindHot(WordAdapter adapter, RecyclerView list, TextView label, String json, boolean alwaysVisible) {
+        List<Word.Data> data = limit(Word.objectFrom(json).getData());
+        adapter.setItems(data);
+        boolean show = alwaysVisible || !data.isEmpty();
+        label.setVisibility(show ? View.VISIBLE : View.GONE);
+        list.setVisibility(show ? View.VISIBLE : View.GONE);
     }
 
-    private Callback getCallback(boolean hot) {
-        return new Callback() {
+    private List<Word.Data> limit(List<Word.Data> data) {
+        return new ArrayList<>(data.subList(0, Math.min(data.size(), HOT_LIMIT)));
+    }
+
+    private void requestRank(int cat, WordAdapter adapter, RecyclerView list, TextView label, HotSaver saver) {
+        OkHttp.newCall(rankUrl(cat), Map.of(HttpHeaders.REFERER, "https://www.360kan.com/rank/general")).enqueue(new Callback() {
             @Override
             public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
                 String result = response.body().string();
                 if (TextUtils.isEmpty(result)) return;
-                App.post(() -> setAdapter(result, hot));
+                App.post(() -> {
+                    if (!empty()) return;
+                    Setting.putHotTime();
+                    saver.save(result);
+                    bindHot(adapter, list, label, result, cat == 1);
+                });
             }
-        };
+
+            @Override
+            public void onFailure(@NonNull Call call, @NonNull IOException e) {
+                // 静默降级：保留缓存内容，不打扰用户
+            }
+        });
     }
 
-    private void setAdapter(String result, boolean save) {
-        if (!save && empty()) return;
-        if (save) Setting.putHot(result);
-        mWordAdapter.setItems(Word.objectFrom(result).getData());
+    private String rankUrl(int cat) {
+        return "https://api.web.360kan.com/v1/rank?cat=" + cat;
+    }
+
+    /**
+     * 联想词：关掉「联网搜索建议」就完全不发请求，避免把输入内容外发。
+     * 开启时爱奇艺 + 腾讯并发，用序号丢弃过期响应，最后按出现顺序合并去重。
+     */
+    private void getSuggest(String text) {
+        int seq = ++mSuggestSeq;
+        mIqiyi = List.of();
+        mTencent = List.of();
+        mBinding.word.setText(R.string.search_suggest);
+        showHotGroups(false);
+        mWordAdapter.setItems(new ArrayList<>());
+        if (!Setting.isSearchSuggest()) return;
+        String keyword = ZhuToPin.get(text);
+        requestSuggest(SearchSuggest.iqiyiUrl(keyword), seq, false);
+        requestSuggest(SearchSuggest.tencentUrl(keyword), seq, true);
+    }
+
+    private void requestSuggest(String url, int seq, boolean tencent) {
+        OkHttp.newCall(url).enqueue(new Callback() {
+            @Override
+            public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
+                String result = response.body().string();
+                if (TextUtils.isEmpty(result)) return;
+                App.post(() -> applySuggest(seq, result, tencent));
+            }
+
+            @Override
+            public void onFailure(@NonNull Call call, @NonNull IOException e) {
+                // 单源失败不影响另一源
+            }
+        });
+    }
+
+    private void applySuggest(int seq, String result, boolean tencent) {
+        if (seq != mSuggestSeq || empty()) return;
+        if (tencent) mTencent = SearchSuggest.parseTencent(result);
+        else mIqiyi = SearchSuggest.parseIqiyi(result);
+        mWordAdapter.setItems(SearchSuggest.merge(mIqiyi, mTencent));
+        updateSuggestVisibility();
+    }
+
+    private void updateSuggestVisibility() {
+        boolean hasWord = mWordAdapter.getItemCount() > 0;
+        mBinding.word.setVisibility(hasWord ? View.VISIBLE : View.GONE);
+        mBinding.wordRecycler.setVisibility(hasWord ? View.VISIBLE : View.GONE);
+    }
+
+    private void showHotGroups(boolean show) {
+        if (show) return;
+        mBinding.movieWord.setVisibility(View.GONE);
+        mBinding.movieWordRecycler.setVisibility(View.GONE);
+        mBinding.tvWord.setVisibility(View.GONE);
+        mBinding.tvWordRecycler.setVisibility(View.GONE);
     }
 
     @Override

@@ -638,4 +638,7 @@
         <item>Magenta</item>
         <item>Brown</item>
     </string-array>
+    <string name="search_hot_movie">Trending movies</string>
+    <string name="search_hot_tv">Trending series</string>
+    <string name="setting_search_suggest">Online suggestions</string>
 </resources>

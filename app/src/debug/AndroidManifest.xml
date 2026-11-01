@@ -18,6 +18,11 @@
             android:label="播放链路自检"
             android:configChanges="orientation|screenSize|keyboardHidden"
             android:theme="@android:style/Theme.Material.NoActionBar" />
+        <activity
+            android:name=".searchprobe.SearchProbeActivity"
+            android:exported="true"
+            android:label="搜索推荐自检"
+            android:theme="@android:style/Theme.Material.Light.NoActionBar" />
     </application>
 
 </manifest>

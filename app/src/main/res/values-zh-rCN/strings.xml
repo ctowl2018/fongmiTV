@@ -618,4 +618,7 @@
         <item>紫红</item>
         <item>棕</item>
     </string-array>
+    <string name="search_hot_movie">电影热播</string>
+    <string name="search_hot_tv">剧集热播</string>
+    <string name="setting_search_suggest">联网搜索建议</string>
 </resources>

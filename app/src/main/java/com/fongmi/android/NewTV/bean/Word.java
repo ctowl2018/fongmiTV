@@ -39,6 +39,15 @@ public class Word {
         @SerializedName(value = "title", alternate = "name")
         private String title;
 
+        /**
+         * 由关键词直接构造。联想词需要合并去重后再造对象，没有现成的 JSON 可用。
+         */
+        public static Data create(String title) {
+            Data data = new Data();
+            data.title = title;
+            return data.trans();
+        }
+
         public String getTitle() {
             return TextUtils.isEmpty(title) ? "" : title;
         }

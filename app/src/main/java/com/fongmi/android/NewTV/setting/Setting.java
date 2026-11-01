@@ -6,6 +6,9 @@ import com.github.catvod.utils.Prefers;
 
 public class Setting {
 
+    /** 热词榜最小刷新间隔：15 分钟。榜单是低频数据，没必要每次进搜索页都打三次请求。 */
+    private static final long HOT_TTL_MS = 15 * 60 * 1000L;
+
     private static final int MIN_WALL = 0;
     private static final int MAX_WALL = 4;
     private static final int MIN_WALL_TYPE = 0;
@@ -49,6 +52,43 @@ public class Setting {
 
     public static void putHot(String hot) {
         Prefers.put("hot", hot);
+    }
+
+    public static String getHotMovie() {
+        return Prefers.getString("hot_movie");
+    }
+
+    public static void putHotMovie(String hot) {
+        Prefers.put("hot_movie", hot);
+    }
+
+    public static String getHotTv() {
+        return Prefers.getString("hot_tv");
+    }
+
+    public static void putHotTv(String hot) {
+        Prefers.put("hot_tv", hot);
+    }
+
+    /** 上次成功拉取热词的时间，用于节流。 */
+    public static boolean isHotExpired() {
+        return System.currentTimeMillis() - Prefers.getLong("hot_time") > HOT_TTL_MS;
+    }
+
+    public static void putHotTime() {
+        Prefers.put("hot_time", System.currentTimeMillis());
+    }
+
+    /**
+     * 联网搜索建议。关闭后输入关键词不再向第三方索取联想词，
+     * 避免把用户逐字输入的内容明文发给爱奇艺/腾讯。
+     */
+    public static boolean isSearchSuggest() {
+        return Prefers.getBoolean("search_suggest", true);
+    }
+
+    public static void putSearchSuggest(boolean suggest) {
+        Prefers.put("search_suggest", suggest);
     }
 
     public static int getWall() {

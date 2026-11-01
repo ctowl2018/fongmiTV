@@ -83,6 +83,7 @@ public class SettingActivity extends BaseActivity implements ConfigListener, Sit
     private void setOtherText() {
         mBinding.dohText.setText(getDohList()[getDohIndex()]);
         mBinding.incognitoText.setText(Setting.getSwitch(Setting.isIncognito()));
+        mBinding.searchSuggestText.setText(Setting.getSwitch(Setting.isSearchSuggest()));
         mBinding.themeText.setText((theme = ResUtil.getStringArray(R.array.select_theme))[themeIndex()]);
         mBinding.ffmpegText.setText(ResUtil.getString(DecodeCodecSelector.FFMPEG_EXTENSION_USABLE ? R.string.ffmpeg_available : R.string.ffmpeg_unavailable));
         mBinding.sizeText.setText((size = ResUtil.getStringArray(R.array.select_size))[PlayerSetting.getSize()]);
@@ -115,6 +116,7 @@ public class SettingActivity extends BaseActivity implements ConfigListener, Sit
         mBinding.vodHome.setOnClickListener(this::onVodHome);
         mBinding.wall.setOnLongClickListener(this::onWallEdit);
         mBinding.incognito.setOnClickListener(this::setIncognito);
+        mBinding.searchSuggest.setOnClickListener(this::setSearchSuggest);
         mBinding.vodHistory.setOnClickListener(this::onVodHistory);
         mBinding.wallDefault.setOnClickListener(this::setWallDefault);
         mBinding.wallRefresh.setOnClickListener(this::setWallRefresh);
@@ -230,6 +232,11 @@ public class SettingActivity extends BaseActivity implements ConfigListener, Sit
         Setting.putThemeColor(THEME_COLORS[next]);
         RefreshEvent.theme();
         mBinding.themeText.setText(theme[next]);
+    }
+
+    private void setSearchSuggest(View view) {
+        Setting.putSearchSuggest(!Setting.isSearchSuggest());
+        mBinding.searchSuggestText.setText(Setting.getSwitch(Setting.isSearchSuggest()));
     }
 
     private void setIncognito(View view) {
