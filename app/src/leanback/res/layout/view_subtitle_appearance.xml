@@ -47,6 +47,14 @@
 
     </com.google.android.material.chip.ChipGroup>
 
+    <com.google.android.material.textview.MaterialTextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingHorizontal="24dp"
+        android:paddingTop="2dp"
+        android:text="@string/subtitle_style_hint"
+        android:textAppearance="?attr/textAppearanceBodySmall" />
+
     <com.google.android.material.button.MaterialButton
         android:id="@+id/systemSetting"
         style="@style/PlaybackDialogAction"

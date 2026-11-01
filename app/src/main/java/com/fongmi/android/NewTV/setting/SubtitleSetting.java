@@ -21,13 +21,11 @@ public class SubtitleSetting {
     public static final int STYLE_ORIGINAL = 0;
     public static final int STYLE_SYSTEM = 1;
     public static final int STYLE_CUSTOM = 2;
-    public static final int SECONDARY_MODE_DEFAULT = -3;
-    public static final int SECONDARY_MODE_OFF = -2;
-    public static final int SECONDARY_MODE_AUTO = -1;
     public static final float MIN_SCALE = 0.5f;
     public static final float MAX_SCALE = 4.0f;
-    public static final float MIN_BITMAP_BRIGHTNESS = 0.5f;
-    public static final float MAX_BITMAP_BRIGHTNESS = 2.0f;
+    public static final int MIN_ASS_LIMIT = 0;
+    public static final int MAX_ASS_LIMIT = 3;
+    private static final int DEFAULT_ASS_LIMIT = 2;
     public static final float MIN_POSITION = -100.0f;
     public static final float MAX_POSITION = 100.0f;
     public static final float MIN_OPACITY = 0.0f;
@@ -36,8 +34,6 @@ public class SubtitleSetting {
     public static final float MAX_EDGE_WIDTH = 6.0f;
     public static final float MIN_SHADOW = 0.0f;
     public static final float MAX_SHADOW = 8.0f;
-    public static final float MIN_SECONDARY_POSITION = 0.0f;
-    public static final float MAX_SECONDARY_POSITION = 200.0f;
     public static final int SUBTITLE_COLOR_WHITE = Color.WHITE;
     public static final int SUBTITLE_COLOR_YELLOW = 0xFFFFFF00;
     public static final int SUBTITLE_COLOR_CYAN = 0xFF00E5FF;
@@ -56,7 +52,6 @@ public class SubtitleSetting {
     private static final int DEFAULT_EDGE_TYPE = CaptionStyleCompat.EDGE_TYPE_OUTLINE;
     private static final int DEFAULT_EDGE_COLOR = SUBTITLE_COLOR_BLACK;
     private static final float DEFAULT_SCALE = 1.0f;
-    private static final float DEFAULT_BITMAP_BRIGHTNESS = 1.0f;
     private static final float DEFAULT_POSITION = 0.0f;
     private static final float DEFAULT_TEXT_OPACITY = 1.0f;
     private static final float DEFAULT_EDGE_OPACITY = 1.0f;
@@ -65,8 +60,6 @@ public class SubtitleSetting {
     private static final float DEFAULT_SHADOW = CaptionStyleCompat.DEFAULT_SHADOW_OFFSET;
     private static final float SYSTEM_EDGE_WIDTH = 1.65f;
     private static final CaptionStyleCompat DEFAULT_STYLE = createCaptionStyle(DEFAULT_TEXT_COLOR, DEFAULT_BACKGROUND_COLOR, DEFAULT_EDGE_TYPE, DEFAULT_EDGE_COLOR, DEFAULT_EDGE_WIDTH, DEFAULT_SHADOW);
-    private static final int DEFAULT_SECONDARY_MODE = SECONDARY_MODE_DEFAULT;
-    private static final float DEFAULT_SECONDARY_POSITION = 10.0f;
 
     public static String getSearchToken() {
         return Prefers.getString("subtitle_search_token", "");
@@ -118,16 +111,29 @@ public class SubtitleSetting {
         Prefers.put("subtitle_scale", Math.clamp(value, MIN_SCALE, MAX_SCALE));
     }
 
-    public static float getBitmapBrightness() {
-        return clampBitmapBrightness(Prefers.getFloat("subtitle_bitmap_brightness", DEFAULT_BITMAP_BRIGHTNESS));
+
+    /** 0 = 跟随视频，1 = 720p，2 = 1080p，3 = 1440p。 */
+    public static int getAssRenderLimit() {
+        return Math.clamp(Prefers.getInt("subtitle_ass_limit", DEFAULT_ASS_LIMIT), MIN_ASS_LIMIT, MAX_ASS_LIMIT);
     }
 
-    public static void putBitmapBrightness(float value) {
-        Prefers.put("subtitle_bitmap_brightness", clampBitmapBrightness(value));
+    public static void putAssRenderLimit(int limit) {
+        Prefers.put("subtitle_ass_limit", Math.clamp(limit, MIN_ASS_LIMIT, MAX_ASS_LIMIT));
     }
 
-    private static float clampBitmapBrightness(float value) {
-        return Float.isFinite(value) ? Math.clamp(value, MIN_BITMAP_BRIGHTNESS, MAX_BITMAP_BRIGHTNESS) : DEFAULT_BITMAP_BRIGHTNESS;
+    /**
+     * 传给 libass 的位图渲染像素上限，{@code 0} 表示按视频原分辨率渲染。
+     *
+     * <p>4K 片源下 OPEN_GL 每帧要上传接近 4K 的纹理，开销明显；上游私有 fork 同样限制在
+     * 1080p 再放大。
+     */
+    public static int getAssRenderPixels() {
+        return switch (getAssRenderLimit()) {
+            case 1 -> 1280 * 720;
+            case 2 -> 1920 * 1080;
+            case 3 -> 2560 * 1440;
+            default -> 0;
+        };
     }
 
     public static float getPosition() {
@@ -224,21 +230,7 @@ public class SubtitleSetting {
         Prefers.put("subtitle_shadow", Math.clamp(value, MIN_SHADOW, MAX_SHADOW));
     }
 
-    public static int getSecondaryMode() {
-        return Math.clamp(Prefers.getInt("subtitle_secondary_track", DEFAULT_SECONDARY_MODE), SECONDARY_MODE_DEFAULT, SECONDARY_MODE_AUTO);
-    }
 
-    public static void putSecondaryMode(int mode) {
-        Prefers.put("subtitle_secondary_track", Math.clamp(mode, SECONDARY_MODE_DEFAULT, SECONDARY_MODE_AUTO));
-    }
-
-    public static float getSecondaryPosition() {
-        return Math.clamp(Prefers.getFloat("subtitle_secondary_position", DEFAULT_SECONDARY_POSITION), MIN_SECONDARY_POSITION, MAX_SECONDARY_POSITION);
-    }
-
-    public static void putSecondaryPosition(float value) {
-        Prefers.put("subtitle_secondary_position", Math.clamp(value, MIN_SECONDARY_POSITION, MAX_SECONDARY_POSITION));
-    }
 
     @Nullable
     public static ExternalFont.Item getFont() {
@@ -332,9 +324,7 @@ public class SubtitleSetting {
 
     public static void resetAdjust() {
         Prefers.put("subtitle_scale", DEFAULT_SCALE);
-        Prefers.put("subtitle_bitmap_brightness", DEFAULT_BITMAP_BRIGHTNESS);
         Prefers.put("subtitle_position", DEFAULT_POSITION);
-        Prefers.put("subtitle_secondary_position", DEFAULT_SECONDARY_POSITION);
     }
 
     public static void resetStyle() {
@@ -351,13 +341,9 @@ public class SubtitleSetting {
         putFont(null);
     }
 
-    public static void resetAdvanced() {
-        Prefers.put("subtitle_secondary_track", DEFAULT_SECONDARY_MODE);
-    }
 
     public static void reset() {
         resetAdjust();
         resetStyle();
-        resetAdvanced();
     }
 }

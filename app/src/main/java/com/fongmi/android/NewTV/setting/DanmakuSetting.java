@@ -36,6 +36,7 @@ public class DanmakuSetting {
     private static final float MAX_LINE_SPACING = 2.0f;
     private static final int MIN_MAX_SCROLL_LINES = 0;
     private static final int MAX_MAX_SCROLL_LINES = 20;
+    private static final long MAX_OFFSET_MS = 300_000L;
     private static final int MIN_MAX_FIXED_LINES = 0;
     private static final int MAX_MAX_FIXED_LINES = 10;
 
@@ -62,6 +63,15 @@ public class DanmakuSetting {
 
     public static void putSpiderFirst(boolean spiderFirst) {
         Prefers.put("danmaku_spider_first", spiderFirst);
+    }
+
+    /** 弹幕时间偏移，毫秒。持久化后换集不再归零。 */
+    public static long getTimeOffsetMs() {
+        return Math.clamp(Prefers.getLong("danmaku_offset"), -MAX_OFFSET_MS, MAX_OFFSET_MS);
+    }
+
+    public static void putTimeOffsetMs(long offsetMs) {
+        Prefers.put("danmaku_offset", Math.clamp(offsetMs, -MAX_OFFSET_MS, MAX_OFFSET_MS));
     }
 
     public static String getApiUrl() {

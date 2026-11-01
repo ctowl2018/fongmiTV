@@ -17,6 +17,11 @@ import java.util.Map;
 
 public class Backup {
 
+    /** 当前备份格式版本。1 = 含 live 字段的旧格式，2 = 移除 live 后的格式。 */
+    public static final int SCHEMA_VERSION = 2;
+
+    @SerializedName("schemaVersion")
+    private Integer schemaVersion;
     @SerializedName("site")
     private List<Site> site;
     @SerializedName("keep")
@@ -30,6 +35,7 @@ public class Backup {
 
     public static Backup create() {
         Backup backup = new Backup();
+        backup.schemaVersion = SCHEMA_VERSION;
         backup.setPrefers(Prefers.getPrefers().getAll());
         backup.setSite(AppDatabase.get().getSiteDao().findAll());
         backup.setKeep(AppDatabase.get().getKeepDao().findAll());
@@ -55,6 +61,15 @@ public class Backup {
         AppDatabase.get().getConfigDao().insertOrUpdate(getConfig());
         AppDatabase.get().getHistoryDao().insertOrUpdate(getHistory());
         for (Map.Entry<String, ?> entry : getPrefers().entrySet()) Prefers.put(entry.getKey(), entry.getValue());
+    }
+
+    /** 旧备份（无 schemaVersion 字段）按 1 处理；比当前版本新则拒绝导入。 */
+    public int getSchemaVersion() {
+        return schemaVersion == null ? 1 : schemaVersion;
+    }
+
+    public boolean isSupported() {
+        return getSchemaVersion() <= SCHEMA_VERSION;
     }
 
     public List<Site> getSite() {

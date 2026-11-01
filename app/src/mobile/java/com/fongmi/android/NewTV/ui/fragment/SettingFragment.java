@@ -23,6 +23,7 @@ import com.fongmi.android.NewTV.event.RefreshEvent;
 import com.fongmi.android.NewTV.impl.Callback;
 import com.fongmi.android.NewTV.impl.ConfigListener;
 import com.fongmi.android.NewTV.impl.SiteListener;
+import com.fongmi.android.NewTV.player.track.DecodeCodecSelector;
 import com.fongmi.android.NewTV.setting.PlayerSetting;
 import com.fongmi.android.NewTV.setting.Setting;
 import com.fongmi.android.NewTV.ui.activity.HomeActivity;
@@ -97,6 +98,7 @@ public class SettingFragment extends BaseFragment implements ConfigListener, Sit
         mBinding.dohText.setText(getDohList()[getDohIndex()]);
         mBinding.incognitoText.setText(Setting.getSwitch(Setting.isIncognito()));
         mBinding.sizeText.setText((size = ResUtil.getStringArray(R.array.select_size))[PlayerSetting.getSize()]);
+        mBinding.ffmpegText.setText(ResUtil.getString(DecodeCodecSelector.FFMPEG_EXTENSION_USABLE ? R.string.ffmpeg_available : R.string.ffmpeg_unavailable));
     }
 
     private void setCacheText() {

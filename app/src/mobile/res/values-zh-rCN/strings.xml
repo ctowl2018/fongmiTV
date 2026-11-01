@@ -58,11 +58,6 @@
     <!-- Hint -->
     <string name="shortcut"> 已于主萤幕新增捷径。</string>
 
-    <string-array name="select_background">
-        <item>关</item>
-        <item>开</item>
-        <item>画中画</item>
-    </string-array>
 
     <string name="dialog_action_choose_file">选取文件</string>
     <string name="dialog_action_delete_config">删除配置记录</string>

@@ -155,10 +155,8 @@
     <string name="subtitle_reset">Reset</string>
     <string name="subtitle_tab_appearance">Appearance</string>
     <string name="subtitle_tab_adjust">Adjust</string>
-    <string name="subtitle_tab_advanced">Advanced</string>
     <string name="subtitle_offset">Subtitle offset</string>
     <string name="subtitle_size">Size</string>
-    <string name="subtitle_brightness">Subtitle brightness</string>
     <string name="subtitle_position">Position</string>
     <string name="subtitle_primary_position">Primary position</string>
     <string name="subtitle_style">Style</string>
@@ -168,8 +166,8 @@
     <string name="playback_font_imported">Font imported: %1$s</string>
     <string name="playback_font_import_failed">Unable to import font</string>
     <string name="playback_font_load_failed">Unable to load fonts</string>
-    <string name="subtitle_style_original">Original</string>
-    <string name="subtitle_style_system">System</string>
+    <string name="subtitle_style_original">Follow file</string>
+    <string name="subtitle_style_system">Follow system</string>
     <string name="subtitle_style_custom">Custom</string>
     <string name="subtitle_system_setting">System caption settings</string>
     <string name="subtitle_text_color">Subtitle color</string>
@@ -184,15 +182,8 @@
     <string name="subtitle_shadow_strength">Shadow strength</string>
     <string name="subtitle_background">Background</string>
     <string name="subtitle_background_opacity">Background transparency</string>
-    <string name="subtitle_secondary_track">Secondary subtitles</string>
-    <string name="subtitle_secondary_default">Default</string>
-    <string name="subtitle_secondary_off">Off</string>
-    <string name="subtitle_secondary_auto">Auto</string>
-    <string name="subtitle_secondary_select">Select</string>
     <string name="subtitle_primary_role">P</string>
     <string name="subtitle_secondary_role">S</string>
-    <string name="subtitle_secondary_track_select">Secondary subtitle</string>
-    <string name="subtitle_secondary_position">Secondary position</string>
     <string name="subtitle_color_white">White</string>
     <string name="subtitle_color_yellow">Yellow</string>
     <string name="subtitle_color_cyan">Cyan</string>
@@ -269,11 +260,11 @@
     <string name="setting_player">Player setting</string>
     <string name="setting_module">Modules</string>
     <string name="setting_danmaku">Danmaku setting</string>
-    <string name="setting_incognito">Incognito mode</string>
+    <string name="setting_incognito">Incognito (no history)</string>
     <string name="setting_theme_color">Theme color</string>
     <string name="setting_auto">Auto</string>
     <string name="setting_custom">Custom</string>
-    <string name="setting_size">Image size</string>
+    <string name="setting_size">Posters per row</string>
     <string name="setting_doh">DoH</string>
     <string name="setting_proxy">Proxy</string>
     <string name="setting_cache">Cache</string>
@@ -344,7 +335,7 @@
     <string name="player_aac_track">Prefer aac track</string>
     <string name="player_adblock">Remove ads</string>
     <string name="player_tunnel">Tunnel mode</string>
-    <string name="player_buffer">Buffer time</string>
+    <string name="player_buffer">Buffer multiplier</string>
     <string name="player_decode_setting">Decode setting</string>
     <string name="player_preload_setting">Preload setting</string>
     <string name="player_preload">Preload</string>
@@ -354,14 +345,6 @@
     <string name="player_preload_size">Preload size</string>
     <string name="player_preload_time">Preload time</string>
     <string name="player_preload_time_value">%1$d seconds</string>
-    <string name="player_mpv_conf">mpv.conf</string>
-    <string name="player_mpv_gpu_next">gpu-next</string>
-    <string name="player_mpv_vulkan">vulkan</string>
-    <string name="player_mpv_conf_priority_hint">Reopen playback to load mpv.conf. Media options, scripts, and controls can change settings afterward; the last write applies. volume is the control volume baseline.</string>
-    <string name="player_mpv_conf_conflict_hint">Player controls manage: %1$s. Media options, scripts, and controls follow the last write; volume is the control volume baseline.</string>
-    <string name="player_mpv_conf_import_success">Loaded mpv.conf. Tap OK to save.</string>
-    <string name="player_mpv_conf_import_failed">Unable to import mpv.conf</string>
-    <string name="player_mpv_conf_save_failed">Unable to save mpv.conf</string>
     <string name="player_ua">User-Agent</string>
 
     <!-- Danmaku -->
@@ -460,10 +443,10 @@
     </string-array>
 
     <string-array name="select_size">
-        <item>Small</item>
-        <item>Medium</item>
-        <item>Large</item>
-        <item>Extra</item>
+        <item>7 per row</item>
+        <item>6 per row</item>
+        <item>5 per row</item>
+        <item>4 per row</item>
     </string-array>
 
     <string-array name="select_scale">
@@ -505,10 +488,6 @@
     <string name="content_image_subtitle">[Image subtitle]</string>
     <string name="content_retry">Retry subtitles</string>
     <string name="content_retry_loading">Loading…</string>
-    <string name="subtitle_offset_primary">Primary subtitle delay</string>
-    <string name="subtitle_offset_secondary">Secondary subtitle delay</string>
-    <string name="subtitle_offset_both">Both subtitle delays</string>
-    <string name="subtitle_offset_link">Adjust both delays</string>
     <string name="subtitle_offset_reset">Reset subtitle timing</string>
     <string name="subtitle_offset_limit">Subtitle delay must stay within ±300 seconds.</string>
 
@@ -621,4 +600,42 @@
     <string name="dialog_min_choices">Select at least %1$d options</string>
     <string name="dialog_max_choices">Select at most %1$d options</string>
 
+    <string name="subtitle_style_hint">ASS subtitles use the styles inside the file; only size applies here.</string>
+    <string name="subtitle_offset_hint">Applies to this playback session only.</string>
+
+    <string-array name="select_background">
+        <item>Off</item>
+        <item>On</item>
+        <item>Picture-in-picture</item>
+    </string-array>
+    <string name="player_scale">Aspect ratio</string>
+    <string name="player_ass_limit">ASS render limit</string>
+
+    <string-array name="select_ass_limit">
+        <item>Follow video</item>
+        <item>720p</item>
+        <item>1080p</item>
+        <item>1440p</item>
+    </string-array>
+    <string name="player_verbose_log">Verbose log</string>
+    <string name="setting_ffmpeg">FFmpeg extension</string>
+    <string name="ffmpeg_available">Available</string>
+    <string name="ffmpeg_unavailable">Unavailable</string>
+
+    <string-array name="select_theme">
+        <item>Default</item>
+        <item>Follow wallpaper</item>
+        <item>Purple</item>
+        <item>Indigo</item>
+        <item>Blue</item>
+        <item>Cyan</item>
+        <item>Teal</item>
+        <item>Green</item>
+        <item>Light green</item>
+        <item>Orange</item>
+        <item>Red</item>
+        <item>Pink</item>
+        <item>Magenta</item>
+        <item>Brown</item>
+    </string-array>
 </resources>

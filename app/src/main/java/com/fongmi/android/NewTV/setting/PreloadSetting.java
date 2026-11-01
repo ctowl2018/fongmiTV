@@ -9,9 +9,11 @@ public class PreloadSetting {
     public static final int MIN_SIZE_MB = 128;
     public static final int MAX_SIZE_MB = 4096;
     public static final int STEP_SIZE_MB = 128;
+    public static final int DEFAULT_SIZE_MB = 512;
     public static final int MIN_TIME_SECONDS = 20;
     public static final int MAX_TIME_SECONDS = 120;
     public static final int STEP_TIME_SECONDS = 10;
+    public static final int DEFAULT_TIME_SECONDS = 60;
 
     public static boolean isEnabled() {
         return Prefers.getBoolean("preload");
@@ -38,7 +40,7 @@ public class PreloadSetting {
     }
 
     public static int getSizeMb() {
-        int size = Math.clamp(Prefers.getInt("preload_size", MIN_SIZE_MB), MIN_SIZE_MB, MAX_SIZE_MB);
+        int size = Math.clamp(Prefers.getInt("preload_size", DEFAULT_SIZE_MB), MIN_SIZE_MB, MAX_SIZE_MB);
         return Math.clamp(MIN_SIZE_MB + (long) Math.round((float) (size - MIN_SIZE_MB) / STEP_SIZE_MB) * STEP_SIZE_MB, MIN_SIZE_MB, MAX_SIZE_MB);
     }
 
@@ -51,7 +53,7 @@ public class PreloadSetting {
     }
 
     public static int getTimeSeconds() {
-        int seconds = Math.clamp(Prefers.getInt("preload_time", MAX_TIME_SECONDS), MIN_TIME_SECONDS, MAX_TIME_SECONDS);
+        int seconds = Math.clamp(Prefers.getInt("preload_time", DEFAULT_TIME_SECONDS), MIN_TIME_SECONDS, MAX_TIME_SECONDS);
         return Math.clamp(MIN_TIME_SECONDS + (long) Math.round((float) (seconds - MIN_TIME_SECONDS) / STEP_TIME_SECONDS) * STEP_TIME_SECONDS, MIN_TIME_SECONDS, MAX_TIME_SECONDS);
     }
 

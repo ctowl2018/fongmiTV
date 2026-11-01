@@ -12,13 +12,12 @@ import com.fongmi.android.NewTV.R;
 import com.fongmi.android.NewTV.databinding.FragmentSettingPlayerBinding;
 import com.fongmi.android.NewTV.impl.BufferListener;
 import com.fongmi.android.NewTV.impl.UaListener;
-import com.fongmi.android.NewTV.player.mpv.MpvUtil;
 import com.fongmi.android.NewTV.setting.PlayerSetting;
 import com.fongmi.android.NewTV.setting.Setting;
+import com.fongmi.android.NewTV.setting.SubtitleSetting;
 import com.fongmi.android.NewTV.ui.activity.HomeActivity;
 import com.fongmi.android.NewTV.ui.base.BaseFragment;
 import com.fongmi.android.NewTV.ui.dialog.BufferDialog;
-import com.fongmi.android.NewTV.ui.dialog.MpvConfDialog;
 import com.fongmi.android.NewTV.ui.dialog.UaDialog;
 import com.fongmi.android.NewTV.utils.ResUtil;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
@@ -26,9 +25,10 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 public class SettingPlayerFragment extends BaseFragment implements UaListener, BufferListener {
 
     private FragmentSettingPlayerBinding mBinding;
-    private String[] background;
     private String[] render;
-    private String[] engine;
+    private String[] background;
+    private String[] scale;
+    private String[] assLimit;
 
     public static SettingPlayerFragment newInstance() {
         return new SettingPlayerFragment();
@@ -41,62 +41,29 @@ public class SettingPlayerFragment extends BaseFragment implements UaListener, B
 
     @Override
     protected void initView() {
-        setVisible();
         setPlaybackModeText();
         mBinding.adblockText.setText(Setting.getSwitch(Setting.isAdblock()));
         mBinding.libassText.setText(Setting.getSwitch(PlayerSetting.isLibass()));
         mBinding.bufferText.setText(String.valueOf(PlayerSetting.getBuffer()));
-        mBinding.mpvVulkanText.setText(Setting.getSwitch(PlayerSetting.isMpvVulkan()));
-        mBinding.mpvGpuNextText.setText(Setting.getSwitch(PlayerSetting.isMpvGpuNext()));
         mBinding.backgroundText.setText((background = ResUtil.getStringArray(R.array.select_background))[PlayerSetting.getBackground()]);
+        mBinding.scaleText.setText((scale = ResUtil.getStringArray(R.array.select_scale))[PlayerSetting.getScale()]);
+        mBinding.assLimitText.setText((assLimit = ResUtil.getStringArray(R.array.select_ass_limit))[SubtitleSetting.getAssRenderLimit()]);
+        mBinding.verboseLogText.setText(Setting.getSwitch(PlayerSetting.isVerboseLog()));
     }
 
     @Override
     protected void initEvent() {
-        mBinding.engine.setOnClickListener(this::setEngine);
         mBinding.decode.setOnClickListener(this::onDecode);
         mBinding.adblock.setOnClickListener(this::setAdblock);
         mBinding.libass.setOnClickListener(this::setLibass);
-        mBinding.mpvConf.setOnClickListener(this::onMpvConf);
-        mBinding.mpvGpuNext.setOnClickListener(this::setMpvGpuNext);
-        mBinding.mpvVulkan.setOnClickListener(this::setMpvVulkan);
         mBinding.render.setOnClickListener(this::setRender);
         mBinding.background.setOnClickListener(this::onBackground);
+        mBinding.scale.setOnClickListener(this::setScale);
+        mBinding.assLimit.setOnClickListener(this::setAssLimit);
+        mBinding.verboseLog.setOnClickListener(this::setVerboseLog);
         mBinding.buffer.setOnClickListener(this::onBuffer);
         mBinding.preload.setOnClickListener(this::onPreload);
         mBinding.ua.setOnClickListener(this::onUa);
-    }
-
-    private void setVisible() {
-        boolean exo = PlayerSetting.isExo();
-        boolean vulkan = !exo && MpvUtil.isVulkanSupported();
-        mBinding.mpvConf.setVisibility(exo ? View.GONE : View.VISIBLE);
-        mBinding.mpvVulkan.setVisibility(vulkan ? View.VISIBLE : View.GONE);
-        mBinding.mpvGpuNext.setVisibility(exo ? View.GONE : View.VISIBLE);
-        mBinding.libass.setVisibility(exo ? View.VISIBLE : View.GONE);
-        mBinding.buffer.setVisibility(exo ? View.VISIBLE : View.GONE);
-    }
-
-    private void setEngine(View view) {
-        int index = (PlayerSetting.getEngine() + 1) % PlayerSetting.getEngineCount();
-        if (index == PlayerSetting.ENGINE_MPV && !MpvUtil.checkInstalled()) return;
-        PlayerSetting.putEngine(index);
-        setPlaybackModeText();
-        setVisible();
-    }
-
-    private void onMpvConf(View view) {
-        MpvConfDialog.show(this);
-    }
-
-    private void setMpvGpuNext(View view) {
-        PlayerSetting.putMpvGpuNext(!PlayerSetting.isMpvGpuNext());
-        mBinding.mpvGpuNextText.setText(Setting.getSwitch(PlayerSetting.isMpvGpuNext()));
-    }
-
-    private void setMpvVulkan(View view) {
-        PlayerSetting.putMpvVulkan(!PlayerSetting.isMpvVulkan());
-        mBinding.mpvVulkanText.setText(Setting.getSwitch(PlayerSetting.isMpvVulkan()));
     }
 
     private void setRender(View view) {
@@ -106,9 +73,7 @@ public class SettingPlayerFragment extends BaseFragment implements UaListener, B
     }
 
     private void setPlaybackModeText() {
-        engine = ResUtil.getStringArray(R.array.select_engine);
         render = ResUtil.getStringArray(R.array.select_render);
-        mBinding.engineText.setText(engine[PlayerSetting.getEngine()]);
         mBinding.renderText.setText(render[PlayerSetting.getRender()]);
     }
 
@@ -122,12 +87,29 @@ public class SettingPlayerFragment extends BaseFragment implements UaListener, B
         PlayerSetting.putBuffer(times);
     }
 
+    private void setScale(View view) {
+        int next = (PlayerSetting.getScale() + 1) % scale.length;
+        PlayerSetting.putScale(next);
+        mBinding.scaleText.setText(scale[next]);
+    }
+
+    private void setVerboseLog(View view) {
+        PlayerSetting.putVerboseLog(!PlayerSetting.isVerboseLog());
+        mBinding.verboseLogText.setText(Setting.getSwitch(PlayerSetting.isVerboseLog()));
+    }
+
+    private void setAssLimit(View view) {
+        int next = (SubtitleSetting.getAssRenderLimit() + 1) % assLimit.length;
+        SubtitleSetting.putAssRenderLimit(next);
+        mBinding.assLimitText.setText(assLimit[next]);
+    }
+
     private void onBackground(View view) {
-        new MaterialAlertDialogBuilder(requireActivity()).setTitle(R.string.player_background).setNegativeButton(R.string.dialog_negative, null).setSingleChoiceItems(background, PlayerSetting.getBackground(), (dialog, which) -> {
-            mBinding.backgroundText.setText(background[which]);
-            PlayerSetting.putBackground(which);
-            dialog.dismiss();
-        }).show();
+        PlayerSetting.putBackground(PlayerSetting.isBackgroundOn() ? 0 : 1);
+        mBinding.backgroundText.setText((background = ResUtil.getStringArray(R.array.select_background))[PlayerSetting.getBackground()]);
+        mBinding.scaleText.setText((scale = ResUtil.getStringArray(R.array.select_scale))[PlayerSetting.getScale()]);
+        mBinding.assLimitText.setText((assLimit = ResUtil.getStringArray(R.array.select_ass_limit))[SubtitleSetting.getAssRenderLimit()]);
+        mBinding.verboseLogText.setText(Setting.getSwitch(PlayerSetting.isVerboseLog()));
     }
 
     private void setAdblock(View view) {

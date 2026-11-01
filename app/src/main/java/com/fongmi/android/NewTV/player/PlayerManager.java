@@ -83,7 +83,6 @@ public class PlayerManager implements ParseCallback {
     private String playbackId;
     private long playbackAttempt;
     private float speedBeforePress = Float.NaN;
-    private long danmakuTimeOffsetMs;
 
     private long pendingStartPositionMs;
     private Result browseResult;
@@ -446,11 +445,11 @@ public class PlayerManager implements ParseCallback {
     }
 
     public DanmakuConfig getDanmakuConfig() {
-        return DanmakuSetting.getConfig().buildUpon().setTimeOffsetMs(danmakuTimeOffsetMs).build();
+        return DanmakuSetting.getConfig().buildUpon().setTimeOffsetMs(DanmakuSetting.getTimeOffsetMs()).build();
     }
 
     public void setDanmakuConfig(DanmakuConfig config) {
-        danmakuTimeOffsetMs = config.timeOffsetMs;
+        DanmakuSetting.putTimeOffsetMs(config.timeOffsetMs);
         callback.onDanmakuConfigChanged(config);
     }
 
@@ -630,7 +629,8 @@ public class PlayerManager implements ParseCallback {
 
     private void resetPlaybackSettings() {
         setSpeed(SpeedSetting.NORMAL);
-        setDanmakuConfig(DanmakuSetting.getConfig());
+        // 用 getDanmakuConfig() 而不是裸配置：后者的 timeOffsetMs 恒为 0，会把持久化的偏移清掉
+        setDanmakuConfig(getDanmakuConfig());
     }
 
     public void prepareForReplacement() {
@@ -1156,9 +1156,12 @@ public class PlayerManager implements ParseCallback {
 
         @Override
         public void onPlayerError(@NonNull PlaybackException e) {
-            PlaybackLog.recordError(PlaybackLog.capture(PlayerManager.this), e);
+            JsonObject snapshot = PlaybackLog.capture(PlayerManager.this);
+            PlaybackLog.recordError(snapshot, e);
             // 始终输出：以前只在 LogSession 开启时才打，用户"没有任何反馈"时无从排查。
             Log.e("TV-Playback", "player=" + Integer.toHexString(System.identityHashCode(player)) + " event=playerError playbackId=" + playbackId + " attempt=" + playbackAttempt + " code=" + e.getErrorCodeName() + " msg=" + e.getMessage() + " engine=" + (engine == null ? "null" : engine.getType()) + " url=" + (spec == null ? "null" : spec.getUrl()), e);
+            // 详细日志开关：额外打出完整诊断快照（轨道/解码器/输出设备等），便于 adb 排障。
+            if (PlayerSetting.isVerboseLog()) Log.e("TV-Playback-Detail", snapshot.toString());
             if (spec == null) return;
             clearPreload();
             if (engine.getType() == PlayerEngine.Type.MPV && e.errorCode == PlaybackException.ERROR_CODE_DRM_LICENSE_ACQUISITION_FAILED && !mpvDrmExoFallback) {

@@ -59,7 +59,7 @@ public final class BackupManager {
 
     private static boolean restore(File file) {
         Backup backup = Backup.objectFrom(Archive.readGzip(file));
-        boolean valid = !backup.getConfig().isEmpty();
+        boolean valid = backup.isSupported() && !backup.getConfig().isEmpty();
         if (valid) backup.restore();
         return valid;
     }

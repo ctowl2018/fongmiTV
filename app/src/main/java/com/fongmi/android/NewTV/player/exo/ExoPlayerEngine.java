@@ -37,6 +37,7 @@ import com.fongmi.android.NewTV.setting.DecodeSetting;
 import com.fongmi.android.NewTV.setting.PlayerSetting;
 import com.google.gson.JsonObject;
 
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -166,7 +167,12 @@ public class ExoPlayerEngine implements PlayerEngine, AnalyticsListener {
 
     @Override
     public List<DecoderMode> getSupportedDecoderModes(@C.TrackType int trackType) {
-        return trackType == C.TRACK_TYPE_VIDEO || trackType == C.TRACK_TYPE_AUDIO ? List.of(DecoderMode.values()) : List.of();
+        if (trackType != C.TRACK_TYPE_VIDEO && trackType != C.TRACK_TYPE_AUDIO) return List.of();
+        // FFmpeg 扩展不可用时不能把 FFMPEG 摆出来：选中后 filter() 会静默退化成软解，
+        // 用户以为切到了 FFmpeg，实际仍是 MediaCodec。列表里直接不出现更诚实。
+        return Arrays.stream(DecoderMode.values())
+                .filter(mode -> mode != DecoderMode.FFMPEG || DecodeCodecSelector.FFMPEG_EXTENSION_USABLE)
+                .toList();
     }
 
     @Override

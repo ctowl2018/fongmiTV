@@ -7,6 +7,7 @@ import androidx.media3.common.DolbyVisionOutputPolicy;
 import com.github.catvod.utils.Prefers;
 
 import com.fongmi.android.NewTV.player.compat.DecoderMode;
+import com.fongmi.android.NewTV.player.track.DecodeCodecSelector;
 
 public class DecodeSetting {
 
@@ -35,6 +36,7 @@ public class DecodeSetting {
     }
 
     private static boolean isDecoderModeSupported(int engine, DecoderMode mode) {
+        if (mode == DecoderMode.FFMPEG && !DecodeCodecSelector.FFMPEG_EXTENSION_USABLE) return false;
         return engine != PlayerSetting.ENGINE_MPV || mode != DecoderMode.SOFTWARE;
     }
 

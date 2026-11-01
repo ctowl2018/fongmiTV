@@ -43,11 +43,6 @@ public final class AssSubtitleSupport {
 
     private static final String TAG = AssSubtitleSupport.class.getSimpleName();
 
-    /**
-     * 字幕位图渲染上限。默认值 0 表示按视频原始分辨率渲染，4K 片源下 OPEN_GL 每帧要上传
-     * 接近 4K 的纹理，开销明显；上游私有 fork 同样限制在 1080p 再放大。
-     */
-    private static final int MAX_RENDER_PIXELS = 1920 * 1080;
     private static final int GLYPH_SIZE = 10000;
     private static final int BITMAP_CACHE_SIZE_MB = 128;
 
@@ -98,7 +93,7 @@ public final class AssSubtitleSupport {
     }
 
     private AssSubtitleSupport() {
-        this.handler = new AssHandler(AssRenderType.OVERLAY_OPEN_GL, new AssHandlerConfig(GLYPH_SIZE, BITMAP_CACHE_SIZE_MB, MAX_RENDER_PIXELS));
+        this.handler = new AssHandler(AssRenderType.OVERLAY_OPEN_GL, new AssHandlerConfig(GLYPH_SIZE, BITMAP_CACHE_SIZE_MB, SubtitleSetting.getAssRenderPixels()));
         this.parserFactory = new AssSubtitleParserFactory(handler);
     }
 

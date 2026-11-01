@@ -21,6 +21,7 @@ import com.fongmi.android.NewTV.event.RefreshEvent;
 import com.fongmi.android.NewTV.impl.Callback;
 import com.fongmi.android.NewTV.impl.ConfigListener;
 import com.fongmi.android.NewTV.impl.SiteListener;
+import com.fongmi.android.NewTV.player.track.DecodeCodecSelector;
 import com.fongmi.android.NewTV.setting.PlayerSetting;
 import com.fongmi.android.NewTV.setting.Setting;
 import com.fongmi.android.NewTV.ui.base.BaseActivity;
@@ -44,7 +45,10 @@ import java.util.List;
 
 public class SettingActivity extends BaseActivity implements ConfigListener, SiteListener, DohDialog.Listener {
 
+    private static final int[] THEME_COLORS = {-1, 0, 0xFF6750A4, 0xFF3949AB, 0xFF1E88E5, 0xFF00ACC1, 0xFF00897B, 0xFF43A047, 0xFF7CB342, 0xFFFB8C00, 0xFFE53935, 0xFFD81B60, 0xFF8E24AA, 0xFF6D4C41};
+
     private ActivitySettingBinding mBinding;
+    private String[] theme;
     private String[] size;
 
     public static void start(Activity activity) {
@@ -79,6 +83,8 @@ public class SettingActivity extends BaseActivity implements ConfigListener, Sit
     private void setOtherText() {
         mBinding.dohText.setText(getDohList()[getDohIndex()]);
         mBinding.incognitoText.setText(Setting.getSwitch(Setting.isIncognito()));
+        mBinding.themeText.setText((theme = ResUtil.getStringArray(R.array.select_theme))[themeIndex()]);
+        mBinding.ffmpegText.setText(ResUtil.getString(DecodeCodecSelector.FFMPEG_EXTENSION_USABLE ? R.string.ffmpeg_available : R.string.ffmpeg_unavailable));
         mBinding.sizeText.setText((size = ResUtil.getStringArray(R.array.select_size))[PlayerSetting.getSize()]);
     }
 
@@ -98,6 +104,7 @@ public class SettingActivity extends BaseActivity implements ConfigListener, Sit
         mBinding.wall.setOnClickListener(this::onWall);
         mBinding.size.setOnClickListener(this::setSize);
         mBinding.cache.setOnClickListener(this::onCache);
+        mBinding.theme.setOnClickListener(this::setTheme);
         mBinding.backup.setOnClickListener(this::onBackup);
         mBinding.player.setOnClickListener(this::onPlayer);
         mBinding.module.setOnClickListener(view -> ModuleActivity.start(this));
@@ -210,6 +217,19 @@ public class SettingActivity extends BaseActivity implements ConfigListener, Sit
     private boolean onWallHistory(View view) {
         HistoryDialog.create().wall().show(this);
         return true;
+    }
+
+    private int themeIndex() {
+        int current = Setting.getThemeColor();
+        for (int i = 0; i < THEME_COLORS.length; i++) if (THEME_COLORS[i] == current) return i;
+        return 0;
+    }
+
+    private void setTheme(View view) {
+        int next = (themeIndex() + 1) % THEME_COLORS.length;
+        Setting.putThemeColor(THEME_COLORS[next]);
+        RefreshEvent.theme();
+        mBinding.themeText.setText(theme[next]);
     }
 
     private void setIncognito(View view) {

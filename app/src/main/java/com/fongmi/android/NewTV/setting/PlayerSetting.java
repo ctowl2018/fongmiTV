@@ -59,20 +59,12 @@ public class PlayerSetting {
         Prefers.put("player_libass", libass);
     }
 
-    public static boolean isMpvGpuNext() {
-        return Prefers.getBoolean("mpv_gpu_next");
+    public static boolean isVerboseLog() {
+        return Prefers.getBoolean("player_verbose_log");
     }
 
-    public static void putMpvGpuNext(boolean gpuNext) {
-        Prefers.put("mpv_gpu_next", gpuNext);
-    }
-
-    public static boolean isMpvVulkan() {
-        return Prefers.getBoolean("mpv_vulkan");
-    }
-
-    public static void putMpvVulkan(boolean vulkan) {
-        Prefers.put("mpv_vulkan", vulkan);
+    public static void putVerboseLog(boolean verbose) {
+        Prefers.put("player_verbose_log", verbose);
     }
 
     public static int getRender() {
