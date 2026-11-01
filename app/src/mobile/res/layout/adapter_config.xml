@@ -21,7 +21,7 @@
         app:strokeColor="@color/selector_stroke"
         tools:text="https://fongmi.github.io/cat.json" />
 
-    <com.fongmi.android.tv.ui.custom.DialogActionView
+    <com.fongmi.android.NewTV.ui.custom.DialogActionView
         android:id="@+id/delete"
         android:contentDescription="@string/dialog_action_delete_config"
         android:layout_width="wrap_content"

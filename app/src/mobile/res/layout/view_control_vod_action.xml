@@ -122,7 +122,7 @@
             style="@style/Control"
             android:text="@string/play_ed" />
 
-        <com.fongmi.android.tv.ui.custom.PlaybackButtonsView
+        <com.fongmi.android.NewTV.ui.custom.PlaybackButtonsView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
 

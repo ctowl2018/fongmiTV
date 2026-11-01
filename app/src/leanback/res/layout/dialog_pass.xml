@@ -6,7 +6,7 @@
     android:orientation="horizontal"
     android:padding="24dp">
 
-    <com.fongmi.android.tv.ui.custom.CustomEditText
+    <com.fongmi.android.NewTV.ui.custom.CustomEditText
         android:id="@+id/pass"
         android:layout_width="0dp"
         android:layout_height="wrap_content"

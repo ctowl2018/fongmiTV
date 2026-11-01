@@ -56,7 +56,7 @@
         android:visibility="gone"
         tools:visibility="visible">
 
-        <com.fongmi.android.tv.ui.custom.DialogActionView
+        <com.fongmi.android.NewTV.ui.custom.DialogActionView
             android:id="@+id/web"
             android:layout_width="24dp"
             android:layout_height="24dp"
@@ -65,7 +65,7 @@
             android:padding="2dp"
             android:src="@drawable/ic_action_web" />
 
-        <com.fongmi.android.tv.ui.custom.DialogActionView
+        <com.fongmi.android.NewTV.ui.custom.DialogActionView
             android:id="@+id/logs"
             android:layout_width="24dp"
             android:layout_height="24dp"

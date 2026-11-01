@@ -10,7 +10,7 @@ import java.io.IOException;
 
 public interface NodeRuntimeApi extends RuntimePlugin {
 
-    String SERVICE_CLASS = "com.fongmi.android.tv.api.node.NodeService";
+    String SERVICE_CLASS = "com.fongmi.android.NewTV.api.node.NodeService";
     String SERVICE_ACTION = "com.fongmi.nodejs.START";
 
     Client create(Context context, Callback callback);

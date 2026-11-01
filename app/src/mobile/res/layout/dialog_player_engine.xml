@@ -22,7 +22,7 @@
             android:textColor="?attr/colorOnSurface"
             android:textSize="16sp" />
 
-        <com.fongmi.android.tv.ui.custom.DialogActionView
+        <com.fongmi.android.NewTV.ui.custom.DialogActionView
             android:id="@+id/debug"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

@@ -1,9 +1,9 @@
 # TV
 -keep class androidx.leanback.widget.** { *; }
 
--keep class com.fongmi.android.tv.bean.** { *; }
+-keep class com.fongmi.android.NewTV.bean.** { *; }
 
--keep class com.fongmi.android.tv.ui.activity.WebActivity {
+-keep class com.fongmi.android.NewTV.ui.activity.WebActivity {
   public static boolean openWeb(java.lang.String);
   public static java.lang.String getUserAgent();
 }

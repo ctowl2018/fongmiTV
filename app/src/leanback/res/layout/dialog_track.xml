@@ -24,7 +24,7 @@
             android:textSize="16sp"
             tools:text="選擇字幕" />
 
-        <com.fongmi.android.tv.ui.custom.DialogActionView
+        <com.fongmi.android.NewTV.ui.custom.DialogActionView
             android:id="@+id/content"
             android:layout_width="40dp"
             android:layout_height="wrap_content"
@@ -35,7 +35,7 @@
             android:padding="8dp"
             android:src="@drawable/ic_action_content" />
 
-        <com.fongmi.android.tv.ui.custom.DialogActionView
+        <com.fongmi.android.NewTV.ui.custom.DialogActionView
             android:id="@+id/search"
             android:contentDescription="@string/dialog_action_search_subtitles"
             android:layout_width="40dp"
@@ -48,7 +48,7 @@
             android:visibility="gone"
             tools:visibility="visible" />
 
-        <com.fongmi.android.tv.ui.custom.DialogActionView
+        <com.fongmi.android.NewTV.ui.custom.DialogActionView
             android:id="@+id/choose"
             android:contentDescription="@string/dialog_action_load_subtitles"
             android:layout_width="40dp"
@@ -61,7 +61,7 @@
             android:visibility="gone"
             tools:visibility="visible" />
 
-        <com.fongmi.android.tv.ui.custom.DialogActionView
+        <com.fongmi.android.NewTV.ui.custom.DialogActionView
             android:id="@+id/setting"
             android:layout_width="40dp"
             android:layout_height="wrap_content"
@@ -74,7 +74,7 @@
 
     </androidx.appcompat.widget.LinearLayoutCompat>
 
-    <com.fongmi.android.tv.ui.custom.CustomRecyclerView
+    <com.fongmi.android.NewTV.ui.custom.CustomRecyclerView
         android:id="@+id/recycler"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

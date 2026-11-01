@@ -24,7 +24,7 @@
             android:textColor="?attr/colorOnSurface"
             android:textSize="16sp" />
 
-        <com.fongmi.android.tv.ui.custom.DialogActionView
+        <com.fongmi.android.NewTV.ui.custom.DialogActionView
             android:id="@+id/mode"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -35,7 +35,7 @@
             android:visibility="gone"
             tools:visibility="visible" />
 
-        <com.fongmi.android.tv.ui.custom.DialogActionView
+        <com.fongmi.android.NewTV.ui.custom.DialogActionView
             android:id="@+id/scan"
             android:contentDescription="@string/dialog_action_scan"
             android:layout_width="wrap_content"
@@ -44,7 +44,7 @@
             android:background="?attr/selectableItemBackgroundBorderless"
             android:src="@drawable/ic_action_scan" />
 
-        <com.fongmi.android.tv.ui.custom.DialogActionView
+        <com.fongmi.android.NewTV.ui.custom.DialogActionView
             android:id="@+id/refresh"
             android:contentDescription="@string/live_refresh"
             android:layout_width="wrap_content"
@@ -95,7 +95,7 @@
 
     </androidx.appcompat.widget.LinearLayoutCompat>
 
-    <com.fongmi.android.tv.ui.custom.CustomRecyclerView
+    <com.fongmi.android.NewTV.ui.custom.CustomRecyclerView
         android:id="@+id/recycler"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

@@ -132,7 +132,7 @@
         android:layout_height="0dp"
         android:layout_weight="1">
 
-        <com.fongmi.android.tv.ui.custom.PlaybackContentRecyclerView
+        <com.fongmi.android.NewTV.ui.custom.PlaybackContentRecyclerView
             android:id="@+id/recycler"
             style="@style/PlaybackDialogBody"
             android:layout_width="match_parent"
