@@ -8,9 +8,7 @@ import androidx.annotation.Nullable;
 import androidx.media3.common.C;
 import androidx.media3.common.MediaItem;
 import androidx.media3.common.MediaMetadata;
-import androidx.media3.common.util.LocalClearKeyLicense;
 import androidx.media3.common.util.Util;
-import androidx.media3.datasource.IsoUri;
 
 import com.fongmi.android.tv.App;
 import com.fongmi.android.tv.BuildConfig;
@@ -24,6 +22,7 @@ import com.fongmi.android.tv.utils.ImgUtil;
 
 import java.nio.charset.StandardCharsets;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.UUID;
 import java.util.stream.IntStream;
@@ -59,7 +58,6 @@ public final class MediaItemFactory {
 
     public static MediaItem from(PlaySpec spec) {
         Uri uri = spec.getUri();
-        if (spec.getIsoEditionIndex() != C.INDEX_UNSET) uri = IsoUri.withEditionIndex(uri, spec.getIsoEditionIndex());
         return new MediaItem.Builder().setUri(uri)
                 .setTag(spec.getAuth())
                 .setSubtitleConfigurations(buildSubtitleConfigs(spec.getSubs()))
@@ -114,9 +112,18 @@ public final class MediaItemFactory {
         return bestIndex;
     }
 
+    private static boolean isLocalClearKey(String key) {
+        return key != null && !key.startsWith("http://") && !key.startsWith("https://");
+    }
+
+    public static boolean isIso(MediaItem item) {
+        if (item == null || item.localConfiguration == null || item.localConfiguration.uri.getPath() == null) return false;
+        return item.localConfiguration.uri.getPath().toLowerCase(Locale.ROOT).endsWith(".iso");
+    }
+
     private static MediaItem.DrmConfiguration buildDrmConfig(Drm drm) {
         if (drm == null) return null;
-        UUID scheme = LocalClearKeyLicense.parse(drm.getKey()).isEmpty() ? drm.getUUID() : C.CLEARKEY_UUID;
+        UUID scheme = isLocalClearKey(drm.getKey()) ? C.CLEARKEY_UUID : drm.getUUID();
         return new MediaItem.DrmConfiguration.Builder(scheme).setMultiSession(!C.CLEARKEY_UUID.equals(scheme)).setForceDefaultLicenseUri(drm.isForceKey()).setLicenseRequestHeaders(drm.getHeader()).setLicenseUri(drm.getKey()).build();
     }
 

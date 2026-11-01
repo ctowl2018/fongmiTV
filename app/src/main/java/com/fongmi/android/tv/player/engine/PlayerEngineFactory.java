@@ -4,11 +4,8 @@ import static com.fongmi.android.tv.player.engine.PlayerEngine.Type.EXO;
 import static com.fongmi.android.tv.player.engine.PlayerEngine.Type.MPV;
 
 import androidx.media3.common.Player;
-import androidx.media3.exoplayer.hls.CmgConfiguration;
-import androidx.media3.mpvplayer.media.MpvDrmSupport;
 
 import com.fongmi.android.tv.player.exo.ExoPlayerEngine;
-import com.fongmi.android.tv.player.media.MediaItemFactory;
 import com.fongmi.android.tv.player.media.PlaySpec;
 import com.fongmi.android.tv.player.mpv.MpvPlayerEngine;
 import com.fongmi.android.tv.setting.PlayerSetting;
@@ -36,7 +33,7 @@ public final class PlayerEngineFactory {
     }
 
     public static boolean canPreload(PlaySpec spec) {
-        return !isCmg(spec);
+        return true;
     }
 
     private static PlayerEngine.Type resolve(PlaySpec spec) {
@@ -48,14 +45,10 @@ public final class PlayerEngineFactory {
     }
 
     static boolean requiresExo(PlaySpec spec) {
-        return isCmg(spec) || "smb".equals(UriUtil.scheme(spec.getUrl())) || (spec.getDrm() != null && !MpvDrmSupport.supports(MediaItemFactory.from(spec)));
-    }
-
-    private static boolean isCmg(PlaySpec spec) {
-        return CmgConfiguration.fromMediaUri(spec.getUri()) != null;
+        return "smb".equals(UriUtil.scheme(spec.getUrl())) || spec.getDrm() != null;
     }
 
     private static boolean isMpvReady() {
-        return PlayerSetting.isMpv() && MpvPlayerEngine.isAvailable();
+        return false;
     }
 }

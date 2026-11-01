@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <application>
+        <activity
+            android:name=".assprobe.AssProbeActivity"
+            android:exported="true"
+            android:label="ASS 渲染自检"
+            android:theme="@android:style/Theme.Material.NoActionBar" />
+        <activity
+            android:name=".player.exo.SessionProbeActivity"
+            android:exported="true"
+            android:label="字幕链路自检"
+            android:theme="@android:style/Theme.Material.NoActionBar" />
+        <activity
+            android:name=".assprobe.PlayProbeActivity"
+            android:exported="true"
+            android:label="播放链路自检"
+            android:configChanges="orientation|screenSize|keyboardHidden"
+            android:theme="@android:style/Theme.Material.NoActionBar" />
+    </application>
+
+</manifest>

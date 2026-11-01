@@ -15,9 +15,7 @@ import android.util.Log;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.os.HandlerCompat;
-import androidx.media3.mpvplayer.MpvLibrary;
 
-import com.fongmi.android.tv.player.mpv.MpvUtil;
 import com.fongmi.android.tv.receiver.RuntimeReceiver;
 import com.fongmi.android.tv.ui.dialog.SpiderDialog;
 import com.fongmi.android.tv.utils.Notify;
@@ -102,7 +100,6 @@ public class App extends Application implements Application.ActivityLifecycleCal
     }
 
     private void initRuntime() {
-        MpvLibrary.setLibraryLoader(MpvUtil::loadRuntime);
         RuntimeModule.refresh();
         cleanRuntime();
         RuntimeReceiver.register(this);
