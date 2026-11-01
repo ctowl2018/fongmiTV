@@ -355,7 +355,6 @@
     <string name="search_keyword">关键字…</string>
     <string name="search_record">历史</string>
     <string name="search_suggest">建议</string>
-    <string name="search_hot">热搜</string>
 
     <!-- Dialog -->
     <string name="dialog_edit">修改</string>
@@ -618,7 +617,8 @@
         <item>紫红</item>
         <item>棕</item>
     </string-array>
-    <string name="search_hot_movie">电影热播</string>
-    <string name="search_hot_tv">剧集热播</string>
+    <string name="search_hot_movie">热播电影</string>
+    <string name="search_hot_tv">热播剧集</string>
     <string name="setting_search_suggest">联网搜索建议</string>
+    <string name="search_hot_variety">热门综艺</string>
 </resources>

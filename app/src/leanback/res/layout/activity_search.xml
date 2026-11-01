@@ -112,15 +112,17 @@
             <com.google.android.material.textview.MaterialTextView
                 android:id="@+id/word"
                 android:layout_width="wrap_content"
+                android:visibility="gone"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="14dp"
-                android:text="@string/search_hot"
+                android:text="@string/search_suggest"
                 android:textColor="@color/white"
                 android:textSize="24sp" />
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/wordRecycler"
                 android:layout_width="match_parent"
+                android:visibility="gone"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="-6dp"
                 android:clipChildren="false"
@@ -173,6 +175,29 @@
                 android:visibility="gone"
                 tools:itemCount="10"
                 tools:listitem="@layout/adapter_search_word" />
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/varietyWord"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="14dp"
+                android:text="@string/search_hot_variety"
+                android:textColor="@color/white"
+                android:textSize="24sp"
+                android:visibility="gone" />
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/varietyWordRecycler"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="-6dp"
+                android:clipChildren="false"
+                android:clipToPadding="false"
+                android:overScrollMode="never"
+                android:visibility="gone"
+                tools:itemCount="10"
+                tools:listitem="@layout/adapter_search_word" />
+
 
 
         </androidx.appcompat.widget.LinearLayoutCompat>

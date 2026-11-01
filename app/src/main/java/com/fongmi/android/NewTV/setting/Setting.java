@@ -46,14 +46,6 @@ public class Setting {
         Prefers.put("keyword", keyword);
     }
 
-    public static String getHot() {
-        return Prefers.getString("hot");
-    }
-
-    public static void putHot(String hot) {
-        Prefers.put("hot", hot);
-    }
-
     public static String getHotMovie() {
         return Prefers.getString("hot_movie");
     }
@@ -68,6 +60,14 @@ public class Setting {
 
     public static void putHotTv(String hot) {
         Prefers.put("hot_tv", hot);
+    }
+
+    public static String getHotVariety() {
+        return Prefers.getString("hot_variety");
+    }
+
+    public static void putHotVariety(String hot) {
+        Prefers.put("hot_variety", hot);
     }
 
     /** 上次成功拉取热词的时间，用于节流。 */

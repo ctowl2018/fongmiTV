@@ -61,6 +61,7 @@ public class SearchFragment extends BaseFragment implements MenuProvider, WordAd
     private WordAdapter mWordAdapter;
     private WordAdapter mMovieAdapter;
     private WordAdapter mTvAdapter;
+    private WordAdapter mVarietyAdapter;
 
     /** 联想词序号：双源并发返回，用序号丢弃过期响应。 */
     private int mSuggestSeq;
@@ -119,6 +120,9 @@ public class SearchFragment extends BaseFragment implements MenuProvider, WordAd
         mBinding.movieWordRecycler.setLayoutManager(new FlexboxLayoutManager(getContext(), FlexDirection.ROW));
         mBinding.tvWordRecycler.setHasFixedSize(false);
         mBinding.tvWordRecycler.setAdapter(mTvAdapter = new WordAdapter(this));
+        mBinding.varietyWordRecycler.setHasFixedSize(false);
+        mBinding.varietyWordRecycler.setAdapter(mVarietyAdapter = new WordAdapter(this));
+        mBinding.varietyWordRecycler.setLayoutManager(new FlexboxLayoutManager(getContext(), FlexDirection.ROW));
         mBinding.tvWordRecycler.setLayoutManager(new FlexboxLayoutManager(getContext(), FlexDirection.ROW));
         mBinding.recordRecycler.setHasFixedSize(false);
         mBinding.recordRecycler.setAdapter(mRecordAdapter = new RecordAdapter(this));
@@ -185,20 +189,21 @@ public class SearchFragment extends BaseFragment implements MenuProvider, WordAd
      */
     private void getHot() {
         mSuggestSeq++;
-        mBinding.word.setText(R.string.search_hot);
-        bindHot(mWordAdapter, mBinding.wordRecycler, mBinding.word, Setting.getHot(), true);
-        bindHot(mMovieAdapter, mBinding.movieWordRecycler, mBinding.movieWord, Setting.getHotMovie(), false);
-        bindHot(mTvAdapter, mBinding.tvWordRecycler, mBinding.tvWord, Setting.getHotTv(), false);
+        mBinding.word.setVisibility(View.GONE);
+        mBinding.wordRecycler.setVisibility(View.GONE);
+        bindHot(mMovieAdapter, mBinding.movieWordRecycler, mBinding.movieWord, Setting.getHotMovie());
+        bindHot(mTvAdapter, mBinding.tvWordRecycler, mBinding.tvWord, Setting.getHotTv());
+        bindHot(mVarietyAdapter, mBinding.varietyWordRecycler, mBinding.varietyWord, Setting.getHotVariety());
         if (!Setting.isHotExpired()) return;
-        requestRank(1, mWordAdapter, mBinding.wordRecycler, mBinding.word, Setting::putHot);
         requestRank(2, mMovieAdapter, mBinding.movieWordRecycler, mBinding.movieWord, Setting::putHotMovie);
         requestRank(3, mTvAdapter, mBinding.tvWordRecycler, mBinding.tvWord, Setting::putHotTv);
+        requestRank(4, mVarietyAdapter, mBinding.varietyWordRecycler, mBinding.varietyWord, Setting::putHotVariety);
     }
 
-    private void bindHot(WordAdapter adapter, RecyclerView list, TextView label, String json, boolean alwaysVisible) {
+    private void bindHot(WordAdapter adapter, RecyclerView list, TextView label, String json) {
         List<Word.Data> data = limit(Word.objectFrom(json).getData());
         adapter.setItems(data);
-        boolean show = alwaysVisible || !data.isEmpty();
+        boolean show = !data.isEmpty();
         label.setVisibility(show ? View.VISIBLE : View.GONE);
         list.setVisibility(show ? View.VISIBLE : View.GONE);
     }
@@ -217,7 +222,7 @@ public class SearchFragment extends BaseFragment implements MenuProvider, WordAd
                     if (!empty()) return;
                     Setting.putHotTime();
                     saver.save(result);
-                    bindHot(adapter, list, label, result, cat == 1);
+                    bindHot(adapter, list, label, result);
                 });
             }
 
@@ -236,6 +241,7 @@ public class SearchFragment extends BaseFragment implements MenuProvider, WordAd
         mIqiyi = List.of();
         mTencent = List.of();
         mBinding.word.setText(R.string.search_suggest);
+        mBinding.word.setVisibility(View.VISIBLE);
         hideHotGroups();
         mWordAdapter.setItems(new ArrayList<>());
         if (!Setting.isSearchSuggest()) return;
@@ -274,6 +280,8 @@ public class SearchFragment extends BaseFragment implements MenuProvider, WordAd
         mBinding.movieWordRecycler.setVisibility(View.GONE);
         mBinding.tvWord.setVisibility(View.GONE);
         mBinding.tvWordRecycler.setVisibility(View.GONE);
+        mBinding.varietyWord.setVisibility(View.GONE);
+        mBinding.varietyWordRecycler.setVisibility(View.GONE);
     }
 
     private void onReset() {

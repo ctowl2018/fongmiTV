@@ -55,6 +55,7 @@ public class SearchActivity extends BaseActivity implements WordAdapter.OnClickL
     private WordAdapter mWordAdapter;
     private WordAdapter mMovieAdapter;
     private WordAdapter mTvAdapter;
+    private WordAdapter mVarietyAdapter;
 
     /** 联想词序号：双源并发返回，用序号丢弃过期响应，避免旧结果覆盖新结果。 */
     private int mSuggestSeq;
@@ -133,6 +134,10 @@ public class SearchActivity extends BaseActivity implements WordAdapter.OnClickL
         mBinding.tvWordRecycler.setHasFixedSize(false);
         mBinding.tvWordRecycler.setLayoutManager(new FlexboxLayoutManager(this, FlexDirection.ROW));
         mBinding.tvWordRecycler.setAdapter(mTvAdapter = new WordAdapter(this));
+        mBinding.varietyWordRecycler.setItemAnimator(null);
+        mBinding.varietyWordRecycler.setHasFixedSize(false);
+        mBinding.varietyWordRecycler.setLayoutManager(new FlexboxLayoutManager(this, FlexDirection.ROW));
+        mBinding.varietyWordRecycler.setAdapter(mVarietyAdapter = new WordAdapter(this));
         mBinding.recordRecycler.setHasFixedSize(false);
         mBinding.recordRecycler.setLayoutManager(new FlexboxLayoutManager(this, FlexDirection.ROW));
         mBinding.recordRecycler.setAdapter(mRecordAdapter = new RecordAdapter(this));
@@ -161,21 +166,21 @@ public class SearchActivity extends BaseActivity implements WordAdapter.OnClickL
      */
     private void getHot() {
         mSuggestSeq++;
-        mBinding.word.setText(R.string.search_hot);
-        showHotGroups(true);
-        bindHot(mWordAdapter, mBinding.wordRecycler, mBinding.word, Setting.getHot(), true);
-        bindHot(mMovieAdapter, mBinding.movieWordRecycler, mBinding.movieWord, Setting.getHotMovie(), false);
-        bindHot(mTvAdapter, mBinding.tvWordRecycler, mBinding.tvWord, Setting.getHotTv(), false);
+        mBinding.word.setVisibility(View.GONE);
+        mBinding.wordRecycler.setVisibility(View.GONE);
+        bindHot(mMovieAdapter, mBinding.movieWordRecycler, mBinding.movieWord, Setting.getHotMovie());
+        bindHot(mTvAdapter, mBinding.tvWordRecycler, mBinding.tvWord, Setting.getHotTv());
+        bindHot(mVarietyAdapter, mBinding.varietyWordRecycler, mBinding.varietyWord, Setting.getHotVariety());
         if (!Setting.isHotExpired()) return;
-        requestRank(1, mWordAdapter, mBinding.wordRecycler, mBinding.word, Setting::putHot);
         requestRank(2, mMovieAdapter, mBinding.movieWordRecycler, mBinding.movieWord, Setting::putHotMovie);
         requestRank(3, mTvAdapter, mBinding.tvWordRecycler, mBinding.tvWord, Setting::putHotTv);
+        requestRank(4, mVarietyAdapter, mBinding.varietyWordRecycler, mBinding.varietyWord, Setting::putHotVariety);
     }
 
-    private void bindHot(WordAdapter adapter, RecyclerView list, TextView label, String json, boolean alwaysVisible) {
+    private void bindHot(WordAdapter adapter, RecyclerView list, TextView label, String json) {
         List<Word.Data> data = limit(Word.objectFrom(json).getData());
         adapter.setItems(data);
-        boolean show = alwaysVisible || !data.isEmpty();
+        boolean show = !data.isEmpty();
         label.setVisibility(show ? View.VISIBLE : View.GONE);
         list.setVisibility(show ? View.VISIBLE : View.GONE);
     }
@@ -194,7 +199,7 @@ public class SearchActivity extends BaseActivity implements WordAdapter.OnClickL
                     if (!empty()) return;
                     Setting.putHotTime();
                     saver.save(result);
-                    bindHot(adapter, list, label, result, cat == 1);
+                    bindHot(adapter, list, label, result);
                 });
             }
 
@@ -218,7 +223,8 @@ public class SearchActivity extends BaseActivity implements WordAdapter.OnClickL
         mIqiyi = List.of();
         mTencent = List.of();
         mBinding.word.setText(R.string.search_suggest);
-        showHotGroups(false);
+        mBinding.word.setVisibility(View.VISIBLE);
+        hideHotGroups();
         mWordAdapter.setItems(new ArrayList<>());
         if (!Setting.isSearchSuggest()) return;
         String keyword = ZhuToPin.get(text);
@@ -256,12 +262,13 @@ public class SearchActivity extends BaseActivity implements WordAdapter.OnClickL
         mBinding.wordRecycler.setVisibility(hasWord ? View.VISIBLE : View.GONE);
     }
 
-    private void showHotGroups(boolean show) {
-        if (show) return;
+    private void hideHotGroups() {
         mBinding.movieWord.setVisibility(View.GONE);
         mBinding.movieWordRecycler.setVisibility(View.GONE);
         mBinding.tvWord.setVisibility(View.GONE);
         mBinding.tvWordRecycler.setVisibility(View.GONE);
+        mBinding.varietyWord.setVisibility(View.GONE);
+        mBinding.varietyWordRecycler.setVisibility(View.GONE);
     }
 
     @Override

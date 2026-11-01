@@ -357,7 +357,6 @@
     <string name="search_keyword">Keywords…</string>
     <string name="search_record">History</string>
     <string name="search_suggest">Suggest</string>
-    <string name="search_hot">Hot</string>
 
     <!-- Dialog -->
     <string name="dialog_edit">Edit</string>
@@ -638,7 +637,8 @@
         <item>Magenta</item>
         <item>Brown</item>
     </string-array>
-    <string name="search_hot_movie">Trending movies</string>
-    <string name="search_hot_tv">Trending series</string>
+    <string name="search_hot_movie">Popular movies</string>
+    <string name="search_hot_tv">Popular series</string>
     <string name="setting_search_suggest">Online suggestions</string>
+    <string name="search_hot_variety">Popular shows</string>
 </resources>
