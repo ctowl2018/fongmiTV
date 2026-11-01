@@ -325,14 +325,6 @@ public class Live {
         return item;
     }
 
-    public int getBootIcon() {
-        return isBoot() ? R.drawable.ic_live_boot : R.drawable.ic_live_block;
-    }
-
-    public int getPassIcon() {
-        return isPass() ? R.drawable.ic_live_block : R.drawable.ic_live_pass;
-    }
-
     public Live boot(boolean boot) {
         setBoot(boot);
         return this;

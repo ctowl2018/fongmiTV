@@ -9,7 +9,6 @@ import android.net.Network;
 import androidx.annotation.NonNull;
 
 import com.fongmi.android.tv.App;
-import com.fongmi.android.tv.api.config.LiveConfig;
 
 public class BootReceiver extends BroadcastReceiver {
 
@@ -39,7 +38,6 @@ public class BootReceiver extends BroadcastReceiver {
         }
 
         private void doJob() {
-            LiveConfig.get().init().load();
             ((ConnectivityManager) App.get().getSystemService(Context.CONNECTIVITY_SERVICE)).unregisterNetworkCallback(this);
         }
     }

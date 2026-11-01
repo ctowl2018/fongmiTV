@@ -43,7 +43,6 @@ import com.fongmi.android.tv.R;
 import com.fongmi.android.tv.api.SiteApi;
 import com.fongmi.android.tv.bean.Result;
 import com.fongmi.android.tv.playback.PlaybackIntent;
-import com.fongmi.android.tv.player.LiveDanmaku;
 import com.fongmi.android.tv.player.PlayerManager;
 import com.fongmi.android.tv.player.media.PlaySpec;
 import com.fongmi.android.tv.service.PlaybackService;
@@ -73,7 +72,6 @@ import java.util.function.Consumer;
 public abstract class PlaybackActivity extends BaseActivity implements MediaController.Listener, Player.Listener, ServiceConnection {
 
     private final DanmakuPlayerViewController danmakuController = new DanmakuPlayerViewController();
-    private final LiveDanmaku liveDanmaku = new LiveDanmaku(danmakuController::post, this::onDanmakuState);
     private final List<ServiceReadyObserver<?>> serviceReadyObservers = new ArrayList<>();
     private final MutableLiveData<PlayerManager> playbackPlayerState = new MutableLiveData<>(null);
     private final List<Runnable> foreverObserverRemovers = new ArrayList<>();
@@ -733,7 +731,6 @@ public abstract class PlaybackActivity extends BaseActivity implements MediaCont
     }
 
     private void detachPlayerView() {
-        liveDanmaku.setDataSource(null);
         getPlayerView().setPlayer(null);
     }
 
@@ -764,7 +761,6 @@ public abstract class PlaybackActivity extends BaseActivity implements MediaCont
         playerView.setRender(PlayerSetting.getRender());
         danmakuController.setOkHttpClient(OkHttp.player());
         danmakuController.setEnabled(DanmakuSetting.isShow());
-        liveDanmaku.setEnabled(DanmakuSetting.isShow());
         danmakuController.setConfig(DanmakuSetting.getConfig());
         SubtitleSetting.applyStyle(playerView.getSubtitleView());
     }
@@ -775,9 +771,8 @@ public abstract class PlaybackActivity extends BaseActivity implements MediaCont
     }
 
     private void setDanmakuSource(@Nullable Uri uri) {
-        boolean live = LiveDanmaku.isLive(uri);
-        liveDanmaku.setDataSource(live && getPlayerView().getPlayer() != null ? uri : null);
-        danmakuController.setDataSource(live ? null : uri);
+        // 直播弹幕（spider:// 协议）随直播功能一起移除，点播弹幕仍走 PlayerView 内置控制器。
+        danmakuController.setDataSource(uri);
     }
 
     private void onDanmakuState(String state, String msg) {
@@ -940,7 +935,6 @@ public abstract class PlaybackActivity extends BaseActivity implements MediaCont
         @Override
         public void onDanmakuEnabledChanged(boolean enabled) {
             if (!isOwner()) return;
-            liveDanmaku.setEnabled(enabled);
             danmakuController.setEnabled(enabled);
         }
 
@@ -1012,7 +1006,6 @@ public abstract class PlaybackActivity extends BaseActivity implements MediaCont
 
     @Override
     public void onServiceDisconnected(ComponentName name) {
-        liveDanmaku.setDataSource(null);
         releaseController();
         playbackPlayerState.setValue(null);
         pendingResume = null;
@@ -1065,7 +1058,6 @@ public abstract class PlaybackActivity extends BaseActivity implements MediaCont
         releaseWebView();
         clearObservers();
         detachPlayerView();
-        liveDanmaku.close();
         danmakuController.close();
         super.onDestroy();
         releasePlaybackService();

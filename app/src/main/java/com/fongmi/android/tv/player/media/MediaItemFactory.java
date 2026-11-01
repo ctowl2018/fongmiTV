@@ -36,11 +36,6 @@ public final class MediaItemFactory {
         return new MediaMetadata.Builder().setTitle(title).setArtist(artist).setSubtitle(subtitle).setArtworkUri(getArtworkUri(artUri)).build();
     }
 
-    public static MediaMetadata buildLiveMetadata(String title, @Nullable EpgData data, String artUri) {
-        String details = data == null ? "" : data.format();
-        return buildMetadata(title, details, artUri).buildUpon().setStation(title).setDisplayTitle(title).setMediaType(MediaMetadata.MEDIA_TYPE_TV_CHANNEL).build();
-    }
-
     public static Uri getArtworkUri(String artUri) {
         artUri = ImgUtil.cache(artUri);
         return TextUtils.isEmpty(artUri) ? null : Uri.parse(artUri);
